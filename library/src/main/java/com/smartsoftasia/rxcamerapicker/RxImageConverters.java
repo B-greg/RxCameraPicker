@@ -140,6 +140,34 @@ public class RxImageConverters {
     Cursor imageCursor = null;
     String finalPath = null;
     String imageId = null;
+    String mediaId = null;
+    String mediaData = null;
+    String[] imageColumns = null;
+    Uri uri;
+
+    if (originalUri.getPath().contains("image")){
+      mediaId =  MediaStore.Images.Media._ID;
+      imageColumns  = new String[] { MediaStore.Images.Media.DATA };
+      mediaData = MediaStore.Images.Media.DATA;
+      if (Environment.getExternalStorageState().equalsIgnoreCase(Environment.MEDIA_MOUNTED)) {
+        uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+      } else {
+        uri = MediaStore.Images.Media.INTERNAL_CONTENT_URI;
+      }
+
+    }else if(originalUri.getPath().contains("video")){
+      mediaId =  MediaStore.Video.Media._ID;
+      imageColumns  = new String[] { MediaStore.Video.Media.DATA };
+      mediaData = MediaStore.Video.Media.DATA;
+      if (Environment.getExternalStorageState().equalsIgnoreCase(Environment.MEDIA_MOUNTED)) {
+        uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+      } else {
+        uri = MediaStore.Video.Media.INTERNAL_CONTENT_URI;
+      }
+    }else {
+      throw new Throwable("No image found");
+    }
+
     String[] imageSplit = originalUri.getLastPathSegment().split("%3A");
     if (imageSplit.length == 1){
       imageId = originalUri.getLastPathSegment().split("%3A")[0];
@@ -151,20 +179,11 @@ public class RxImageConverters {
       throw new Throwable("No image found");
     }
 
-    final String[] imageColumns = { MediaStore.Images.Media.DATA };
-
-    Uri uri;
-    if (Environment.getExternalStorageState().equalsIgnoreCase(Environment.MEDIA_MOUNTED)) {
-      uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-    } else {
-      uri = MediaStore.Images.Media.INTERNAL_CONTENT_URI;
-    }
-
     imageCursor = context.getContentResolver()
-        .query(uri, imageColumns, MediaStore.Images.Media._ID + "=" + imageId, null, null);
+        .query(uri, imageColumns, mediaId + "=" + imageId, null, null);
     if (imageCursor != null && imageCursor.moveToFirst()) {
       finalPath = imageCursor.getString(
-          imageCursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA));
+          imageCursor.getColumnIndexOrThrow(mediaData));
     } else {
       throw new Throwable("No image found");
     }

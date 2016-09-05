@@ -143,7 +143,7 @@ public class HiddenActivity extends Activity {
         chooseCode = SELECT_PHOTO;
         break;
       case VIDEO:
-        cameraPictureUrl = createImageUri();
+        cameraPictureUrl = createVideoUri();
         pictureChooseIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
         pictureChooseIntent.putExtra(MediaStore.EXTRA_OUTPUT, cameraPictureUrl);
         chooseCode = TAKE_PHOTO;
@@ -176,5 +176,15 @@ public class HiddenActivity extends Activity {
         new Date());
     cv.put(MediaStore.Images.Media.TITLE, timeStamp);
     return contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, cv);
+  }
+
+
+  private Uri createVideoUri() {
+    ContentResolver contentResolver = getContentResolver();
+    ContentValues cv = new ContentValues();
+    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(
+        new Date());
+    cv.put(MediaStore.Video.Media.TITLE, timeStamp);
+    return contentResolver.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, cv);
   }
 }
