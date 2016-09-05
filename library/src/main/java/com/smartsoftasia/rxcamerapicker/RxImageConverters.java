@@ -139,7 +139,18 @@ public class RxImageConverters {
   private static String getFullPathFromUri(Context context, Uri originalUri) throws Throwable {
     Cursor imageCursor = null;
     String finalPath = null;
-    String imageId = originalUri.getLastPathSegment().split("%3A")[0].split(":")[1];
+    String imageId = null;
+    String[] imageSplit = originalUri.getLastPathSegment().split("%3A");
+    if (imageSplit.length == 1){
+      imageId = originalUri.getLastPathSegment().split("%3A")[0];
+    }else if(imageSplit.length > 1){
+      imageId = originalUri.getLastPathSegment().split("%3A")[0].split(":")[1];
+    }
+
+    if (imageId == null){
+      throw new Throwable("No image found");
+    }
+
     final String[] imageColumns = { MediaStore.Images.Media.DATA };
 
     Uri uri;
