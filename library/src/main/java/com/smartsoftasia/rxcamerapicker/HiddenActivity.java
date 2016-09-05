@@ -28,6 +28,7 @@ public class HiddenActivity extends Activity {
 
   private static final int SELECT_PHOTO = 100;
   private static final int TAKE_PHOTO = 101;
+  private static final int TAKE_VIDEO = 102;
 
   private Uri cameraPictureUrl;
 
@@ -75,6 +76,9 @@ public class HiddenActivity extends Activity {
           break;
         case TAKE_PHOTO:
           RxImagePicker.with(this).onImagePicked(cameraPictureUrl);
+          break;
+        case TAKE_VIDEO:
+          RxImagePicker.with(this).onImagePicked(data.getData());
           break;
       }
     }
@@ -143,14 +147,18 @@ public class HiddenActivity extends Activity {
         chooseCode = SELECT_PHOTO;
         break;
       case VIDEO:
-        cameraPictureUrl = createVideoUri();
+      //  cameraPictureUrl = createVideoUri();
         pictureChooseIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
-        pictureChooseIntent.putExtra(MediaStore.EXTRA_OUTPUT, cameraPictureUrl);
-        chooseCode = TAKE_PHOTO;
+       // pictureChooseIntent.putExtra(MediaStore.EXTRA_OUTPUT, cameraPictureUrl);
+        chooseCode = TAKE_VIDEO;
+
         break;
     }
 
-    startActivityForResult(pictureChooseIntent, chooseCode);
+    if (pictureChooseIntent.resolveActivity(getPackageManager()) != null) {
+      startActivityForResult(pictureChooseIntent, chooseCode);
+    }
+
   }
 
   private boolean checkPermission() {
