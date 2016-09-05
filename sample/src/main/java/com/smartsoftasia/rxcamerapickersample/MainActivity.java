@@ -1,5 +1,6 @@
 package com.smartsoftasia.rxcamerapickersample;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -7,6 +8,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import com.smartsoftasia.rxcamerapicker.HiddenActivity;
 import com.smartsoftasia.rxcamerapicker.RxImagePicker;
 import com.smartsoftasia.rxcamerapicker.Sources;
 import java.util.List;
@@ -30,6 +32,11 @@ public class MainActivity extends AppCompatActivity {
               @Override
               public void call(Uri uri) {
                 //Get image by uri using one of image loading libraries. I use Glide in sample app.
+                Intent intent = new Intent(getApplicationContext(), HiddenActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.putExtra(HiddenActivity.ALLOW_MULTIPLE_IMAGES, false);
+                intent.putExtra(HiddenActivity.IMAGE_SOURCE, Sources.CAMERA);
+                getApplicationContext().startActivity(intent);
               }
             });
       }

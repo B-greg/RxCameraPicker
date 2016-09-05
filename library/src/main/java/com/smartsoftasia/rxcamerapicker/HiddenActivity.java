@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.content.ClipData;
 import android.content.ContentResolver;
 import android.content.ContentValues;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -15,19 +14,13 @@ import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 
-import android.support.v7.app.AlertDialog;
-import android.util.Log;
-import android.widget.Toast;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 public class HiddenActivity extends Activity {
-  public static final String TAG = "HiddenActivity";
+
   private static final String KEY_CAMERA_PICTURE_URL = "cameraPictureUrl";
 
   public static final String IMAGE_SOURCE = "image_source";
@@ -35,7 +28,6 @@ public class HiddenActivity extends Activity {
 
   private static final int SELECT_PHOTO = 100;
   private static final int TAKE_PHOTO = 101;
-  public static final int REQUEST_ID_MULTIPLE_PERMISSIONS = 1;
 
   private Uri cameraPictureUrl;
 
@@ -67,71 +59,15 @@ public class HiddenActivity extends Activity {
   @Override
   public void onRequestPermissionsResult(int requestCode, String[] permissions,
                                          int[] grantResults) {
-
-    Log.d(TAG, "Permission callback called-------");
-    switch (requestCode) {
-      case REQUEST_ID_MULTIPLE_PERMISSIONS: {
-
-        Map<String, Integer> perms = new HashMap<>();
-        // Initialize the map with both permissions
-        perms.put(Manifest.permission.CAMERA, PackageManager.PERMISSION_GRANTED);
-        perms.put(Manifest.permission.WRITE_EXTERNAL_STORAGE, PackageManager.PERMISSION_GRANTED);
-        // Fill with actual results from user
-        if (grantResults.length > 0) {
-          for (int i = 0; i < permissions.length; i++)
-            perms.put(permissions[i], grantResults[i]);
-          // Check for both permissions
-          if (perms.get(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
-              && perms.get(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-              == PackageManager.PERMISSION_GRANTED) {
-            Log.d(TAG, "sms & location services permission granted");
-            // process the normal flow
-            //else any one or both the permissions are not granted
-          } else {
-            Log.d(TAG, "Some permissions are not granted ask again ");
-            //permission is denied (this is the first time, when "never ask again" is not checked) so ask again explaining the usage of permission
-            //                        // shouldShowRequestPermissionRationale will return true
-            //show the dialog or snackbar saying its necessary and try again otherwise proceed with setup.
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                Manifest.permission.CAMERA) || ActivityCompat.shouldShowRequestPermissionRationale(
-                this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-              showDialogOK("SMS and Location Services Permission required for this app",
-                  new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                      switch (which) {
-                        case DialogInterface.BUTTON_POSITIVE:
-                          checkPermission();
-                          break;
-                        case DialogInterface.BUTTON_NEGATIVE:
-                          // proceed with logic by disabling the related features or quit the app.
-                          break;
-                      }
-                    }
-                  });
-            }
-            //permission is denied (and never ask again is  checked)
-            //shouldShowRequestPermissionRationale will return false
-            else {
-              Toast.makeText(this, "Go to settings and enable permissions", Toast.LENGTH_LONG)
-                  .show();
-              //                            //proceed with logic by disabling the related features or quit the app.
-            }
-          }
-        }
-      }
-    }
-
-/*    if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+    if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
       handleIntent(getIntent());
     } else {
       finish();
-    }*/
+    }
   }
 
   @Override
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
     if (resultCode == RESULT_OK) {
       switch (requestCode) {
         case SELECT_PHOTO:
@@ -198,31 +134,19 @@ public class HiddenActivity extends Activity {
   }
 
   private boolean checkPermission() {
-    int permissionSendMessage = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
-    int locationPermission = ContextCompat.checkSelfPermission(this,
-        Manifest.permission.WRITE_EXTERNAL_STORAGE);
-    List<String> listPermissionsNeeded = new ArrayList<>();
-    if (locationPermission != PackageManager.PERMISSION_GRANTED) {
-      listPermissionsNeeded.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-    }
-    if (permissionSendMessage != PackageManager.PERMISSION_GRANTED) {
-      listPermissionsNeeded.add(Manifest.permission.CAMERA);
-    }
-    if (!listPermissionsNeeded.isEmpty()) {
-      ActivityCompat.requestPermissions(this,
-          listPermissionsNeeded.toArray(new String[listPermissionsNeeded.size()]),
-          REQUEST_ID_MULTIPLE_PERMISSIONS);
+    if (ContextCompat.checkSelfPermission(HiddenActivity.this,
+        Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+      ActivityCompat.requestPermissions(HiddenActivity.this,
+          new String[] { Manifest.permission.WRITE_EXTERNAL_STORAGE }, 0);
       return false;
+    } else if (ContextCompat.checkSelfPermission(HiddenActivity.this, Manifest.permission.CAMERA)
+        != PackageManager.PERMISSION_GRANTED) {
+      ActivityCompat.requestPermissions(HiddenActivity.this,
+          new String[] { Manifest.permission.CAMERA }, 0);
+      return false;
+    } else {
+      return true;
     }
-    return true;
-  }
-
-  private void showDialogOK(String message, DialogInterface.OnClickListener okListener) {
-    new AlertDialog.Builder(this).setMessage(message)
-        .setPositiveButton(getString(android.R.string.ok), okListener)
-        .setNegativeButton(getString(android.R.string.cancel), okListener)
-        .create()
-        .show();
   }
 
   private Uri createImageUri() {
