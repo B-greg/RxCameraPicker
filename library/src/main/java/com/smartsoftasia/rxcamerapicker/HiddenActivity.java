@@ -128,6 +128,26 @@ public class HiddenActivity extends Activity {
         pictureChooseIntent.setType("image/*");
         chooseCode = SELECT_PHOTO;
         break;
+      case VIDEO_GALLERY:
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+          pictureChooseIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+          pictureChooseIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE,
+              getIntent().getBooleanExtra(ALLOW_MULTIPLE_IMAGES, false));
+          pictureChooseIntent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+        } else {
+          pictureChooseIntent = new Intent(Intent.ACTION_GET_CONTENT);
+        }
+        pictureChooseIntent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
+        pictureChooseIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        pictureChooseIntent.setType("video/*");
+        chooseCode = SELECT_PHOTO;
+        break;
+      case VIDEO:
+        cameraPictureUrl = createImageUri();
+        pictureChooseIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+        pictureChooseIntent.putExtra(MediaStore.EXTRA_OUTPUT, cameraPictureUrl);
+        chooseCode = TAKE_PHOTO;
+        break;
     }
 
     startActivityForResult(pictureChooseIntent, chooseCode);

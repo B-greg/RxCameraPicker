@@ -1,5 +1,5 @@
 package com.smartsoftasia.rxcamerapicker;
 
 public enum Sources {
-    CAMERA, GALLERY
+    CAMERA, GALLERY, VIDEO, VIDEO_GALLERY
 }

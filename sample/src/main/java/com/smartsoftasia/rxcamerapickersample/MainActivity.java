@@ -27,16 +27,11 @@ public class MainActivity extends AppCompatActivity {
     fab.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
-        RxImagePicker.with(getApplicationContext()).requestImage(Sources.CAMERA)
+        RxImagePicker.with(getApplicationContext()).requestImage(Sources.VIDEO)
             .subscribe(new Action1<Uri>() {
               @Override
               public void call(Uri uri) {
                 //Get image by uri using one of image loading libraries. I use Glide in sample app.
-                Intent intent = new Intent(getApplicationContext(), HiddenActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.putExtra(HiddenActivity.ALLOW_MULTIPLE_IMAGES, false);
-                intent.putExtra(HiddenActivity.IMAGE_SOURCE, Sources.CAMERA);
-                getApplicationContext().startActivity(intent);
               }
             });
       }
