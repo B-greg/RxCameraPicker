@@ -169,7 +169,7 @@ public class RxImageConverters {
     }
 
     String[] imageSplit = originalUri.getLastPathSegment().split("%3A");
-    if (imageSplit.length == 1){
+    if (!imageSplit[0].contains(":")){
       imageId = originalUri.getLastPathSegment().split("%3A")[0];
     }else if(imageSplit.length > 1){
       imageId = originalUri.getLastPathSegment().split("%3A")[0].split(":")[1];
