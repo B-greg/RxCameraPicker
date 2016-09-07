@@ -101,6 +101,7 @@ public class RxImageConverters {
           Bitmap bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), uri);
           ByteArrayOutputStream bytes = new ByteArrayOutputStream();
           bitmap.compress(Bitmap.CompressFormat.JPEG, 40, bytes);
+          bitmap.recycle();
 
           //you can create a new file name "test.jpg" in sdcard folder.
           File folderFile = Environment.getExternalStoragePublicDirectory(
@@ -171,7 +172,7 @@ public class RxImageConverters {
     String[] imageSplit = originalUri.getLastPathSegment().split("%3A");
     if (!imageSplit[0].contains(":")){
       imageId = originalUri.getLastPathSegment().split("%3A")[0];
-    }else if(imageSplit.length > 1){
+    }else{
       imageId = originalUri.getLastPathSegment().split("%3A")[0].split(":")[1];
     }
 

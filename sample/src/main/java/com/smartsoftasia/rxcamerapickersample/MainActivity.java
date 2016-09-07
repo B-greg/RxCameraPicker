@@ -33,10 +33,10 @@ public class MainActivity extends AppCompatActivity {
     fab.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
-        RxImagePicker.with(getApplicationContext()).requestImage(Sources.VIDEO).flatMap(new Func1<Uri, Observable<?>>() {
+        RxImagePicker.with(getApplicationContext()).requestImage(Sources.CAMERA).flatMap(new Func1<Uri, Observable<?>>() {
           @Override
           public Observable<String> call(Uri uri) {
-            return  RxImageConverters.uriToFullPath(getApplicationContext(), uri);
+            return  RxImageConverters.uriToCompressImageFullPath(getApplicationContext(), "test",  uri);
           }
         }).subscribe(new Action1<Object>() {
           @Override
