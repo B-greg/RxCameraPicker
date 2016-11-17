@@ -3,6 +3,7 @@ package com.smartsoftasia.rxcamerapicker;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Environment;
@@ -99,9 +100,40 @@ public class RxImageConverters {
           String exifOrientation = oldExif.getAttribute(ExifInterface.TAG_ORIENTATION);
 
           Bitmap bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), uri);
-          ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-          bitmap.compress(Bitmap.CompressFormat.JPEG, 40, bytes);
+          // rotate image
+
+
+
+            int rotate = 0;
+            int orientation = oldExif.getAttributeInt(ExifInterface.TAG_ORIENTATION,
+                ExifInterface.ORIENTATION_UNDEFINED);
+            switch (orientation) {
+              case ExifInterface.ORIENTATION_NORMAL:
+                rotate = 0;
+                break;
+              case ExifInterface.ORIENTATION_ROTATE_270:
+                rotate = 270;
+                break;
+              case ExifInterface.ORIENTATION_ROTATE_180:
+                rotate = 180;
+                break;
+              case ExifInterface.ORIENTATION_ROTATE_90:
+                rotate = 90;
+                break;
+            }
+
+            Matrix matrix = new Matrix();
+            matrix.postRotate(rotate);
+            Bitmap bitmapRotated = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),
+                bitmap.getHeight(), matrix, true);
           bitmap.recycle();
+
+
+
+
+          ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+          bitmapRotated.compress(Bitmap.CompressFormat.JPEG, 40, bytes);
+          bitmapRotated.recycle();
 
           //you can create a new file name "test.jpg" in sdcard folder.
           File folderFile = Environment.getExternalStoragePublicDirectory(
@@ -121,11 +153,11 @@ public class RxImageConverters {
           fo.close();
 
           String newImagePath = f.getAbsolutePath();
-          if (exifOrientation != null) {
+/*          if (exifOrientation != null) {
             ExifInterface newExif = new ExifInterface(newImagePath);
             newExif.setAttribute(ExifInterface.TAG_ORIENTATION, exifOrientation);
             newExif.saveAttributes();
-          }
+          }*/
 
           subscriber.onNext(newImagePath);
           subscriber.onCompleted();
