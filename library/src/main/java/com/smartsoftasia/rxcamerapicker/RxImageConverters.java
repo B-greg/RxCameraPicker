@@ -126,7 +126,6 @@ public class RxImageConverters {
             matrix.postRotate(rotate);
             Bitmap bitmapRotated = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),
                 bitmap.getHeight(), matrix, true);
-          bitmap.recycle();
 
 
 
@@ -134,6 +133,8 @@ public class RxImageConverters {
           ByteArrayOutputStream bytes = new ByteArrayOutputStream();
           bitmapRotated.compress(Bitmap.CompressFormat.JPEG, 40, bytes);
           bitmapRotated.recycle();
+          bitmap.recycle();
+
 
           //you can create a new file name "test.jpg" in sdcard folder.
           File folderFile = Environment.getExternalStoragePublicDirectory(
