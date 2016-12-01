@@ -149,6 +149,7 @@ public class HiddenActivity extends Activity {
       case VIDEO:
       //  cameraPictureUrl = createVideoUri();
         pictureChooseIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+        pictureChooseIntent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 0);
        // pictureChooseIntent.putExtra(MediaStore.EXTRA_OUTPUT, cameraPictureUrl);
         chooseCode = TAKE_VIDEO;
 
